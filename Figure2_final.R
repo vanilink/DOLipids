@@ -10,11 +10,9 @@ setwd("E:/DO/R-Analyses/GithubDOLipids/")
 
 # LOAD IN LIPID AND LIPID QTL DATA
 lipids <- read.csv("lipids.csv")[,-1]
-lipid_qtls <- read.csv("lipid_qtls.csv")[,-1]
-
-lipids <- lipids[which(lipids$tissue==tis),]
 rownames(lipids) <- lipids$identifier
-lipid_qtls <- lipid_qtls[which(lipid_qtls$tissue==tis),]
+
+lipid_qtls <- read.csv("lipid_qtls.csv")[,-1]
 
 # subset data at locus
 my.Apoa2 <- subset(lipid_qtls, qtl.chr=="1" & qtl.pos>(171.2-2) & qtl.pos<(171.2+2))
@@ -221,8 +219,8 @@ colnames(fs)[7:ncol(fs)] <- fs[2, 7:ncol(fs)]
 fs.q <- fs[-2:-5,-1:-6] #quant data
 
 row <- which(grepl("CE 18:2", rownames(fs.q)))
-loi <- fs.q[c(1,2,row+1),1:62] # Lipid of Interest
-rownames(loi)[3] <- "analyte"
+loi <- fs.q[c(1,row+1),1:62] # Lipid of Interest
+rownames(loi)[2] <- "analyte"
 loi <- data.frame(t(loi))
 
 loi$analyte <- as.numeric(loi$analyte)
