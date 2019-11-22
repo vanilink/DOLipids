@@ -8,19 +8,30 @@ library("qtl2") #has CC colors
 
 setwd("E:/DO/R-Analyses/GithubDOLipids/")
 
+# define colors
+coon_blue <- "#2CA7DF"
+coon_grey <- "#566977"
+coon_purp <- "#955CA5"
+coon_red <- "#EC6B63"
+coon_turq <- "#63C29C"
+coon_yel <- "#FFCB04"
+
 # LOAD IN LIPID AND LIPID QTL DATA
-lipids <- read.csv("lipids.csv")[,-1]
+lipids <- read.csv("TableS8.csv")
 rownames(lipids) <- lipids$identifier
 
-lipid_qtls <- read.csv("lipid_qtls.csv")[,-1]
+lipid_qtls <- read.csv("TableS9.csv")
+lipid_qtls <- merge(lipid_qtls, lipids)
 
 # subset data at locus
 my.Apoa2 <- subset(lipid_qtls, qtl.chr=="1" & qtl.pos>(171.2-2) & qtl.pos<(171.2+2))
-
 ###############################################################################
 # S2a. Heatmap to cluster allele effects
 
-cluster.my.Apoa2 <- my.Apoa2[,28:35] #reduce to allele effects
+start <- which(colnames(my.Apoa2)=="A")
+end <- which(colnames(my.Apoa2)=="H")
+
+cluster.my.Apoa2 <- my.Apoa2[,start:end] #reduce to allele effects
 rownames(cluster.my.Apoa2) <- my.Apoa2$identifier
 colnames(cluster.my.Apoa2) <- c("AJ","B6","129","NOD","NZO","CAST","PWK","WSB")
 

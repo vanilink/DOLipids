@@ -8,12 +8,20 @@ library("RColorBrewer")
 
 setwd("E:/DO/R-Analyses/GithubDOLipids/")
 
+# define colors
+coon_blue <- "#2CA7DF"
+coon_grey <- "#566977"
+coon_purp <- "#955CA5"
+coon_red <- "#EC6B63"
+coon_turq <- "#63C29C"
+coon_yel <- "#FFCB04"
+
 # SELECT TISSUE #For Figure 1: "plasma" #For Figure S1: "liver"
 tis <- "plasma" 
 
 # LOAD IN LIPID AND LIPID QTL DATA
-lipids <- read.csv("lipids.csv")[,-1]
-lipid_qtls <- read.csv("lipid_qtls.csv")[,-1]
+lipids <- read.csv("TableS8.csv")
+lipid_qtls <- read.csv("TableS9.csv")
 
 lipids <- lipids[which(lipids$tissue==tis),]
 rownames(lipids) <- lipids$identifier
@@ -30,13 +38,12 @@ if(tis=="plasma") {
 data <- as.data.frame(t(dataset$norm[,which(colnames(dataset$norm)%in%lipids$identifier)]))
 data$identifier <- rownames(data)
 
-#remove gangliosides from IDd ones as they were later hand-identified
-data[which(data$class=="Ganglioside"),]$category <- "UNK" 
-
 #combine extended info from lipids table and quant. data from dataset
 data <- merge(lipids,data,by = "identifier")
 rownames(data) <- data$identifier
 
+#remove gangliosides from IDd ones as they were later hand-identified
+data[which(data$class=="Ganglioside"),]$category <- "UNK" 
 
 ###############################################################################
 # b. m/z vs. RT plot
@@ -68,8 +75,11 @@ ID <- subset(data, identifier=="PC_41.4_11.136_852.65076_plus")
 #Liver ID: "TG_16.0_18.1_20.0_1_20.103_906.84802_plus"
 #Liver UNK: "UNK_5.124_465.30432_minus"
 
+start <- which(colnames(data)=="DO021")
+end <- length(data[1,])
+
 mrg <- data.frame("Sex" = ifelse(dataset$covar[,1]==0,coon_grey,"grey"), 
-                  "Lip" = as.numeric(ID[,24:407]))
+                  "Lip" = as.numeric(ID[,start:end]))
 mrg <- mrg[order(mrg$Lip),] #rank-order
 mrg <- data.frame("Rank" = c(1:384), mrg)
 
@@ -88,16 +98,15 @@ dev.off()
 # d. Mice vs. Lipids Heatmap
 
 #annotation_row is info on lipids, rownames are feature IDs
-ano <- data.frame("Category" = factor(data[,7]))
+ano <- data.frame("Category" = factor(data$category))
 rownames(ano) <- data$identifier
 
 Var1 = c(coon_red, coon_purp, coon_blue, coon_yel, coon_turq, "grey")
 names(Var1) = unique(data$category)
 ann_colors = list(Category = Var1)
 
-start <- which(colnames(data)=="DO021")
-end <- length(data[1,])
 hm.data <- data[,start:end]
+rownames(hm.data) <- data$identifier
 
 heat <- pheatmap(hm.data[,], 
                  annotation_row = ano, 

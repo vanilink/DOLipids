@@ -9,11 +9,20 @@ library("qtl2") #has CC colors
 
 setwd("E:/DO/R-Analyses/GithubDOLipids/")
 
+# define colors
+coon_blue <- "#2CA7DF"
+coon_grey <- "#566977"
+coon_purp <- "#955CA5"
+coon_red <- "#EC6B63"
+coon_turq <- "#63C29C"
+coon_yel <- "#FFCB04"
+
 # LOAD IN LIPID AND LIPID QTL DATA
-lipids <- read.csv("lipids.csv")[,-1]
+lipids <- read.csv("TableS8.csv")
 rownames(lipids) <- lipids$identifier
 
-lipid_qtls <- read.csv("lipid_qtls.csv")[,-1]
+lipid_qtls <- read.csv("TableS9.csv")
+lipid_qtls <- merge(lipid_qtls, lipids)
 
 #remove gangliosides from IDd ones as they were later hand-identified
 lipid_qtls[which(lipid_qtls$class=="Ganglioside"),]$category <- "UNK" 
